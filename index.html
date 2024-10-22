@@ -1,1 +1,67 @@
-<h1>hello!</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<header class="bg-gray-800 text-white p-4">
+    <nav class="max-w-7xl mx-auto flex justify-between items-center">
+        <div class="text-2xl font-bold">Query System</div>
+        <ul class="flex space-x-6">
+            <li><a href="#home" class="text-white hover:underline">Home</a></li>
+            <li><a href="#about" class="text-white hover:underline">About</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- Main content of the website -->
+<main class="mt-8">
+    <!-- Query Menu Section -->
+    <section id="query-menu" class="max-w-7xl mx-auto p-8 bg-white rounded-lg shadow-md">
+        <h1 class="text-4xl font-bold">Query Database</h1>
+        <p class="mt-4 text-gray-600">Enter search parameters to query the database.</p>
+
+        <!-- Query Form -->
+        <form action="/query" method="POST" class="mt-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="param1" class="block text-sm font-medium text-gray-700">Parameter 1</label>
+                    <input type="text" name="param1" id="param1" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="param2" class="block text-sm font-medium text-gray-700">Parameter 2</label>
+                    <input type="text" name="param2" id="param2" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="param3" class="block text-sm font-medium text-gray-700">Parameter 3</label>
+                    <input type="text" name="param3" id="param3" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="param4" class="block text-sm font-medium text-gray-700">Parameter 4</label>
+                    <input type="text" name="param4" id="param4" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-8">
+                <button type="submit" class="bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600">
+                    Submit Query
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results" class="max-w-7xl mx-auto p-8 mt-8 bg-white rounded-lg shadow-md">
+        <h2 class="text-3xl font-bold">Query Results</h2>
+        <div id="query-results">
+            <!-- The Python backend will populate this section with a table of results -->
+        </div>
+    </section>
+</main>
+</body>
+</html>
