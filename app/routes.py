@@ -11,7 +11,6 @@ def home():
 
 @app_routes.route('/query', methods=['GET','POST'])
 def query():
-    print("entered query")
     search_base = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 
     # Get JSON data from the frontend
@@ -40,9 +39,9 @@ def query():
                 id_list.append(child.text)
             
         query_results = pd.DataFrame({'id':id_list})
+    
+        #return render_template('index.html', results=jsonify(query_results))
+        return jsonify({'message': 'Query recieved successfully'}), 200
 
     else:
         print("Error: {}".format(response.status_code))
-        
-
-    return render_template('index.html', results=jsonify(query_results))
