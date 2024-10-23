@@ -1,3 +1,11 @@
+from flask import Flask
 from app import app
-if __name__ == '__main__':
-    app.run(debug=True)
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello():
+    return "Hello from Flask on Vercel!"
+
+if __name__ == "__main__":
+    app.run()
