@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggregator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<header class="bg-gray-800 text-white p-4">
+    <nav class="max-w-7xl mx-auto flex justify-between items-center">
+        <div class="text-2xl font-bold">Aggregator</div>
+        <ul class="flex space-x-6">
+            <li><a href="#home" class="text-white hover:underline">Home</a></li>
+            <li><a href="#about" class="text-white hover:underline">About</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- Main content of the website -->
+<main class="mt-8">
+    <!-- Query Menu Section -->
+    <section id="query-menu" class="max-w-7xl mx-auto p-8 bg-white rounded-lg shadow-md">
+        <h1 class="text-4xl font-bold">Query Menu</h1>
+        <p class="mt-4 text-gray-600">Enter search parameters to query the Gene Expression Omnibus.</p>
+
+        <!-- Query Form -->
+        <form id="queryForm">
+            <input type="text" name="param1" placeholder="Parameter 1">
+            <input type="text" name="param2" placeholder="Parameter 2">
+            <button type="submit">Submit Query</button>
+        </form>
+        
+        <script>
+            document.getElementById('queryForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const param1 = document.querySelector('input[name="param1"]').value;
+                const param2 = document.querySelector('input[name="param2"]').value;
+                
+                fetch('https://aggregator-coral.vercel.app/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ param1, param2 }),
+                    mode: "no-cors"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    // Handle display of results
+                });
+            });
+        </script>        
+    </section>
+    
+
+    <!-- Results Section -->
+    <section id="results" class="max-w-7xl mx-auto p-8 mt-8 bg-white rounded-lg shadow-md">
+        <h2 class="text-3xl font-bold">Query Results</h2>
+        <div id="query-results">
+            {% if results %}
+                <table class="table-auto w-full mt-4 border-collapse border border-gray-300">
+                    <thead>
+                        <tr>
+                            <th class="border border-gray-300 p-2">ID</th>
+                            <th class="border border-gray-300 p-2">Name</th>
+                            <th class="border border-gray-300 p-2">Param 1</th>
+                            <th class="border border-gray-300 p-2">Param 2</th>
+                            <th class="border border-gray-300 p-2">Param 3</th>
+                            <th class="border border-gray-300 p-2">Param 4</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                            <tr>
+                                <td class="border border-gray-300 p-2">{{ result.id }}</td>
+                                <td class="border border-gray-300 p-2">{{ result.name }}</td>
+                                <td class="border border-gray-300 p-2">{{ result.param1 }}</td>
+                                <td class="border border-gray-300 p-2">{{ result.param2 }}</td>
+                                <td class="border border-gray-300 p-2">{{ result.param3 }}</td>
+                                <td class="border border-gray-300 p-2">{{ result.param4 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No results found</p>
+            {% endif %}
+        </div>
+    </section>
+    
+</main>
+</body>
+</html>
