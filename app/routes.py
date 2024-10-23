@@ -16,6 +16,7 @@ def register_routes(app):
 
     @app.route('/query', methods=['POST'])
     def query():
+        print("entered query")
         search_base = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 
         # Get JSON data from the frontend
@@ -48,7 +49,6 @@ def register_routes(app):
         else:
             print("Error: {}".format(response.status_code))
         
-        # Process form data and return results
 
         return render_template('index.html', results=jsonify(query_results))
 
