@@ -4,8 +4,9 @@ from app import app
 app = Flask(__name__)
 
 @app.route('/')
-def hello():
+def index():
     return "Hello from Flask on Vercel!"
 
 if __name__ == "__main__":
+    from gunicorn.app.wsgiapp import run
     app.run()
