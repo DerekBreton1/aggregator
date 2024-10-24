@@ -91,9 +91,14 @@ def query():
         #Concatenate DataFrames
         summary_df = pd.concat([summary_df, temp_df])
 
+    # Fix index
     summary_df.reset_index(inplace=True)
+    # Remove columns contianing only missing/ na values
     summary_df.dropna(axis=1, how='all', inplace=True)
+    # Drop predetermined columns
     summary_df.drop(['index', 'summary', 'Samples', 'Sample', 'int', 'PubMedIds'], axis=1, inplace=True)
+    # Drop duplicated rows (unique ids map to non-unique entires)
+    summary_df.drop_duplicates(subset='Accession', inplace=True)
     
     #return jsonify({'message': 'Query recieved successfully'}), 200
     return(summary_df.to_json())

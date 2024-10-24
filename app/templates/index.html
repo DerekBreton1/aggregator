@@ -34,22 +34,32 @@
             // Create rows for each index
             for (let i = 0; i < numRows; i++) {
                 const row = document.createElement("tr");
+                let isEmptyRow = true;
 
                 // Iterate through each key and create a cell for the corresponding value at index i
                 keys.forEach(key => {
-                const cell = document.createElement("td");
+                    const cell = document.createElement("td");
 
-                // Check if the array has a value at index i, otherwise set the cell to an empty string
-                const value = data[key][i] !== undefined ? data[key][i] : "";
-                cell.textContent = value;
+                    // Check if the array has a value at index i, otherwise set the cell to an empty string
+                    const value = data[key][i] !== undefined ? data[key][i] : "";
 
-                console.log(value);
-                // Append the cell to the row
-                row.appendChild(cell);
+                    // If at least one cell has content, mark the row as non-empty
+                    if (value !== "") {
+                        isEmptyRow = false;
+                    }
+
+                    cell.textContent = value;
+
+                    // Append the cell to the row
+                    row.appendChild(cell);
                 });
 
+                // Only append the row if it's not empty
+                if (!isEmptyRow) {
+                    tableBody.appendChild(row);
+                }
                 // Append the row to the table body
-                tableBody.appendChild(row);
+                //tableBody.appendChild(row);
             }
         }
     </script>
