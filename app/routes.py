@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, jsonify
 import requests
 import xml.etree.ElementTree as ET
 import pandas as pd
+import re
 
 app_routes = Blueprint('app_routes', __name__)
 
@@ -18,11 +19,18 @@ def query():
     database = data.get('param1')
     search_term = data.get('param2')
         
-    # Construct query URL
-    search_url = search_base + '?' + 'db=' + database + '&' + 'term=' + search_term
+    # Run eSearch  
+    # Define base url and input terms (will come from form)
+    search_base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+    db = 'gds'
+    term = 'asthma'
+
+    # Construct query
+    search_query_string = search_base_url + "?" + "db=" + db + "&" + "term=" + term
 
     # Make a GET request to retrieve the XML data
-    response = requests.get(search_url)
+    url = search_query_string
+    response = requests.get(url)
 
     # Check if the request was successful
     if response.status_code == 200:
@@ -37,11 +45,58 @@ def query():
             # Save UIDs 
             if child.tag == "Id":
                 id_list.append(child.text)
-            
-        query_results = pd.DataFrame({'id':id_list})
-    
-        #return render_template('index.html', results=jsonify(query_results))
-        return jsonify({'message': 'Query recieved successfully'}), 200
 
     else:
         print("Error: {}".format(response.status_code))
+
+
+    # Run eSummary
+    summary_base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi"
+
+    # Create DataFrame to store summary results
+    summary_df = pd.DataFrame()
+
+    # Gather summary for every ID
+    for id in id_list:
+        # Define summary query string
+        summary_query_string = summary_base_url + "?" + "db=" + db + "&" + "id=" + id
+
+        # Make a GET request to retrieve the XML data
+        url = summary_query_string
+        response = requests.get(url)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Parse the XML response
+            summary_root = ET.fromstring(response.content)
+
+        else:
+            print("Error: {}".format(response.status_code))
+
+        regex = r"'Name':\s*'([^']+)'"
+        match_dict = {}
+
+        # Iterate through summary results
+        for i in summary_root.iter():
+            # Extract attribute names
+            attrib_match = re.search(regex, str(i.attrib))
+
+            if attrib_match:
+                match_dict[attrib_match.group(1)] = i.text
+
+        # Create DataFrame from this set of results
+        temp_df = pd.DataFrame(match_dict, index=[0])
+        temp_df['id'] = id
+
+        #Concatenate DataFrames
+        summary_df = pd.concat([summary_df, temp_df])
+
+    summary_df.reset_index(inplace=True)
+    summary_df.dropna(axis=1, how='all', inplace=True)
+    summary_df.drop(['index', 'summary', 'Samples', 'Sample', 'int', 'PubMedIds'], axis=1, inplace=True)
+    
+    #return jsonify({'message': 'Query recieved successfully'}), 200
+    return(summary_df.to_json())
+
+#else:
+#    print("Error: {}".format(response.status_code))

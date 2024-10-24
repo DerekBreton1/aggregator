@@ -5,6 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aggregator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        function generateTable(data) {
+            const tableBody = document.querySelector("#jsonTable tbody");
+            const tableHead = document.querySelector("#jsonTable thead");
+  
+            // Clear any existing rows in the table body and head
+            tableBody.innerHTML = "";
+            tableHead.innerHTML = "";
+
+            // Create table headers dynamically based on the keys in the data object
+            const headerRow = document.createElement("tr");
+            const keys = Object.keys(data);  // Get all the keys (e.g., "Accession", "taxon")
+
+            keys.forEach(key => {
+                const th = document.createElement("th");
+                th.textContent = key;  // Set column names to the keys
+                headerRow.appendChild(th);
+            });
+
+            // Append the header row to the table head
+            tableHead.appendChild(headerRow);
+
+            // Find the maximum number of rows based on the length of the arrays in each field
+            const numRows = Math.max(...Object.values(data).map(arr => Object.keys(arr).length));
+
+            // Create rows for each index
+            for (let i = 0; i < numRows; i++) {
+                const row = document.createElement("tr");
+
+                // Iterate through each key and create a cell for the corresponding value at index i
+                keys.forEach(key => {
+                const cell = document.createElement("td");
+
+                // Check if the array has a value at index i, otherwise set the cell to an empty string
+                const value = data[key][i] !== undefined ? data[key][i] : "";
+                cell.textContent = value;
+
+                console.log(value);
+                // Append the cell to the row
+                row.appendChild(cell);
+                });
+
+                // Append the row to the table body
+                tableBody.appendChild(row);
+            }
+        }
+    </script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;  /* Ensures there are no double borders */
+            font-family: Arial, sans-serif;
+        }
+
+        th, td {
+            border: 1px solid #ddd;  /* Adds borders to all table cells */
+            padding: 8px;            /* Adds padding inside cells */
+            text-align: left;         /* Aligns text to the left by default */
+        }
+
+        th {
+            background-color: lightblue; /* Green background for header row */
+            color: white;              /* White text color for header */
+            font-weight: bold;         /* Bold font for the header */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2; /* Light grey background for even rows */
+        }
+
+        tr:hover {
+            background-color: #ddd;    /* Slightly darker background on hover */
+        }
+
+        td {
+            text-align: center;        /* Center-aligns text in the data cells */
+        }
+
+        table caption {
+            caption-side: top;         /* Allows adding a title to the table */
+            font-size: 1.5em;          /* Slightly larger font for the caption */
+            margin: 10px 0;            /* Space around the caption */
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
 
@@ -21,7 +106,7 @@
 <!-- Main content of the website -->
 <main class="mt-8">
     <!-- Query Menu Section -->
-    <section id="query-menu" class="max-w-7xl mx-auto p-8 bg-white rounded-lg shadow-md">
+    <section id="query-menu" class="max-w-full mx-auto p-8 bg-white rounded-lg shadow-md">
         <h1 class="text-4xl font-bold">Query Menu</h1>
         <p class="mt-4 text-gray-600">Enter search parameters to query the Gene Expression Omnibus.</p>
 
@@ -48,7 +133,9 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log(data);
+
                     // Handle display of results
+                    generateTable(data);
                 });
             });
         </script>        
@@ -56,37 +143,17 @@
     
 
     <!-- Results Section -->
-    <section id="results" class="max-w-7xl mx-auto p-8 mt-8 bg-white rounded-lg shadow-md">
-        <h2 class="text-3xl font-bold">Query Results</h2>
+    <section id="results" class="max-w-full mx-auto p-8 mt-8 bg-white rounded-lg shadow-md">
+        <h2 class="text-3xl mb-4 font-bold">Query Results</h2>
         <div id="query-results">
-            {% if results %}
-                <table class="table-auto w-full mt-4 border-collapse border border-gray-300">
-                    <thead>
-                        <tr>
-                            <th class="border border-gray-300 p-2">ID</th>
-                            <th class="border border-gray-300 p-2">Name</th>
-                            <th class="border border-gray-300 p-2">Param 1</th>
-                            <th class="border border-gray-300 p-2">Param 2</th>
-                            <th class="border border-gray-300 p-2">Param 3</th>
-                            <th class="border border-gray-300 p-2">Param 4</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for result in results %}
-                            <tr>
-                                <td class="border border-gray-300 p-2">{{ result.id }}</td>
-                                <td class="border border-gray-300 p-2">{{ result.name }}</td>
-                                <td class="border border-gray-300 p-2">{{ result.param1 }}</td>
-                                <td class="border border-gray-300 p-2">{{ result.param2 }}</td>
-                                <td class="border border-gray-300 p-2">{{ result.param3 }}</td>
-                                <td class="border border-gray-300 p-2">{{ result.param4 }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>No results found</p>
-            {% endif %}
+            <table id="jsonTable">
+                <thead>
+                    
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
         </div>
     </section>
     
